@@ -1,0 +1,69 @@
+{
+  "hussydaddy": {
+    "positions": {
+      "XRPUSDT": {
+        "status": false,
+        "entry_price": 0,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      },
+      "ZRXUSDT": {
+        "status": false,
+        "entry_price": null,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      },
+      "ETHUSDT": {
+        "status": false,
+        "entry_price": null,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      },
+      "BNBUSDT": {
+        "status": false,
+        "entry_price": null,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      },
+      "LTCUSDT": {
+        "status": false,
+        "entry_price": 0,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      },
+      "NEARUSDT": {
+        "status": false,
+        "entry_price": 0,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      },
+      "BCHUSDT": {
+        "status": false,
+        "entry_price": null,
+        "triggers": [],
+        "stop_prices": [],
+        "trigger_side": null,
+        "lock_close_price": null,
+        "movement_threshold": null
+      }
+    }
+  }
+}

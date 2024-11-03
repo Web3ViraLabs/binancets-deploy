@@ -1,0 +1,57 @@
+{
+  "order_url": "http://localhost:5000",
+  "websocket_interval": "1m",
+  "api_interval": "1m",
+  "tokens": ["hussydaddy"],
+  "pairs": [
+    {
+      "symbol": "XRPUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 30
+    },
+    {
+      "symbol": "ZRXUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 40
+    },
+    {
+      "symbol": "ETHUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 0.016
+    },
+    {
+      "symbol": "BNBUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 0.08
+    },
+    {
+      "symbol": "LTCUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 0.6
+    },
+    {
+      "symbol": "NEARUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 6
+    },
+    {
+      "symbol": "BCHUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0,
+      "num_previous_candles": 10,
+      "qty": 0.08
+    }
+  ]
+}
