@@ -16,6 +16,7 @@ import {checkTriggers} from "./lib/check-triggers";
 import { tradingLogger, debugLogger, websocketLogger } from './lib/base-logger';
 import { logCandle, logDebug } from './lib/logger';
 import moment from 'moment';
+import { startServer } from './lib/server';
 
 const accountManager = new AccountManager("account-data.json");
 accountManager.initializeAccountData(config.tokens, config.pairs);
@@ -189,6 +190,9 @@ async function main() {
         message: "Starting trading system",
         details: { pair_settings: pairSettings }
     });
+
+    // Start the health check server
+    startServer();
 
     const fetchPromises = config.pairs.map(async (pair) => {
         const symbol = pair.symbol;
