@@ -1,22 +1,35 @@
 import { TradeManager } from "./trade-manager";
-import { AccountManager } from "./account-manager";
-import { pairSettings } from "./load-data";
-import { calculateTriggers } from "./calculate-triggers";
 import { logTrading } from "./logger";
+import { pairSettings } from "./load-data";
+import { AccountManager } from "./account-manager";
+import { calculateTriggers } from "./calculate-triggers";
 
 export async function checkMovementThreshold(
-    token: string,
+    accountName: string,
     symbol: string,
     currentPrice: number,
     tradeManager: TradeManager,
     accountManager: AccountManager
 ): Promise<void> {
-    const tokenData = accountManager.getPositionData(token, symbol);
+    const positionData = accountManager.getPositionData(accountName, symbol);
+
+    if (!positionData) {
+        await logTrading(
+            "ERROR",
+            symbol,
+            "No position data found",
+            {
+                account: accountName,
+                current_price: currentPrice
+            }
+        );
+        return;
+    }
 
     // Check if there's a locked price for the symbol and no active position
-    if (tokenData && tokenData.lock_close_price && !tokenData.status) {
-        const lockClosePrice = tokenData.lock_close_price;
-        const movementThreshold = tokenData.movement_threshold;
+    if (positionData.lock_close_price && !positionData.status) {
+        const lockClosePrice = positionData.lock_close_price;
+        const movementThreshold = positionData.movement_threshold;
 
         if (!movementThreshold) {
             await logTrading(
@@ -24,9 +37,9 @@ export async function checkMovementThreshold(
                 symbol,
                 "No movement threshold found",
                 {
-                    token,
-                    lock_close_price: lockClosePrice,
-                    current_price: currentPrice
+                    account: accountName,
+                    current_price: currentPrice,
+                    threshold: movementThreshold
                 }
             );
             return;
@@ -34,7 +47,7 @@ export async function checkMovementThreshold(
 
         const upThreshold = lockClosePrice * (1 + movementThreshold / 100);
         const downThreshold = lockClosePrice * (1 - movementThreshold / 100);
-        const qty = pairSettings[symbol].qty;
+        const usdtAmount = pairSettings[symbol].usdt_amount;
 
         // Only log when thresholds are actually met
         if (currentPrice >= upThreshold) {
@@ -43,6 +56,7 @@ export async function checkMovementThreshold(
                 symbol,
                 "Upward movement threshold met",
                 {
+                    account: accountName,
                     current_price: currentPrice.toFixed(8),
                     threshold: upThreshold.toFixed(8)
                 }
@@ -52,13 +66,13 @@ export async function checkMovementThreshold(
             const response = await tradeManager.placePositionWithStopLoss(
                 symbol,
                 "BUY",
-                qty,
+                usdtAmount,
                 currentPrice * (1 - movementThreshold / 100)
             );
 
             if (response.success) {
                 try {
-                    const entryPrice = accountManager.getPositionData(token, symbol)?.entry_price || currentPrice;
+                    const entryPrice = accountManager.getPositionData(accountName, symbol)?.entry_price || currentPrice;
                     const stopPrice = entryPrice * (1 - movementThreshold / 100);
 
                     await logTrading(
@@ -66,14 +80,15 @@ export async function checkMovementThreshold(
                         symbol,
                         "Long position entered successfully",
                         {
+                            account: accountName,
                             entry_price: entryPrice,
                             stop_price: stopPrice,
-                            quantity: qty
+                            quantity: usdtAmount
                         }
                     );
 
                     // Set triggers
-                    await calculateTriggers(accountManager, entryPrice, "long", token, symbol);
+                    await calculateTriggers(accountManager, entryPrice, "long", accountName, symbol);
                 } catch (error) {
                     await logTrading(
                         "ERROR",
@@ -81,20 +96,10 @@ export async function checkMovementThreshold(
                         "Error setting buy stop loss",
                         {
                             error: error instanceof Error ? error.message : "Unknown error",
-                            token
+                            account: accountName
                         }
                     );
                 }
-            } else {
-                await logTrading(
-                    "ERROR",
-                    symbol,
-                    "Failed to enter position",
-                    {
-                        error: response.error,
-                        token
-                    }
-                );
             }
         }
         // Downward movement threshold met
@@ -104,6 +109,7 @@ export async function checkMovementThreshold(
                 symbol,
                 "Downward movement threshold met",
                 {
+                    account: accountName,
                     current_price: currentPrice.toFixed(8),
                     threshold: downThreshold.toFixed(8)
                 }
@@ -113,13 +119,13 @@ export async function checkMovementThreshold(
             const response = await tradeManager.placePositionWithStopLoss(
                 symbol,
                 "SELL",
-                qty,
+                usdtAmount,
                 currentPrice * (1 + movementThreshold / 100)
             );
 
             if (response.success) {
                 try {
-                    const entryPrice = accountManager.getPositionData(token, symbol)?.entry_price || currentPrice;
+                    const entryPrice = accountManager.getPositionData(accountName, symbol)?.entry_price || currentPrice;
                     const stopPrice = entryPrice * (1 + movementThreshold / 100);
 
                     await logTrading(
@@ -127,13 +133,14 @@ export async function checkMovementThreshold(
                         symbol,
                         "Short position entered successfully",
                         {
+                            account: accountName,
                             entry_price: entryPrice,
                             stop_price: stopPrice,
-                            quantity: qty
+                            quantity: usdtAmount
                         }
                     );
 
-                    await calculateTriggers(accountManager, entryPrice, "short", token, symbol);
+                    await calculateTriggers(accountManager, entryPrice, "short", accountName, symbol);
                 } catch (error) {
                     await logTrading(
                         "ERROR",
@@ -141,20 +148,10 @@ export async function checkMovementThreshold(
                         "Error setting sell stop loss",
                         {
                             error: error instanceof Error ? error.message : "Unknown error",
-                            token
+                            account: accountName
                         }
                     );
                 }
-            } else {
-                await logTrading(
-                    "ERROR",
-                    symbol,
-                    "Failed to enter position",
-                    {
-                        error: response.error,
-                        token
-                    }
-                );
             }
         }
     }

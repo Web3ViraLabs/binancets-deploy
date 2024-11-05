@@ -1,18 +1,18 @@
-import {TradeManager} from "./trade-manager";
-import {AccountManager} from "./account-manager";
-import {logTrading} from "./logger";
+import { TradeManager } from "./trade-manager";
+import { AccountManager } from "./account-manager";
+import { logTrading } from "./logger";
 
 // Keep track of processing triggers
 const processingTriggers: Record<string, boolean> = {};
 
 export async function checkTriggers(
-    token: string,
+    accountName: string,
     symbol: string,
     currentPrice: number,
     tradeManager: TradeManager,
     accountManager: AccountManager
 ): Promise<void> {
-    const positionData = accountManager.getPositionData(token, symbol);
+    const positionData = accountManager.getPositionData(accountName, symbol);
 
     if (
         !positionData ||
@@ -24,7 +24,7 @@ export async function checkTriggers(
     }
 
     // Create a unique key for this token-symbol pair
-    const lockKey = `${token}-${symbol}`;
+    const lockKey = `${accountName}-${symbol}`;
     
     // Check if we're already processing a trigger for this pair
     if (processingTriggers[lockKey]) {
@@ -42,14 +42,13 @@ export async function checkTriggers(
 
     if (triggerCondition(currentPrice, triggers[0])) {
         try {
-            // Set processing lock
             processingTriggers[lockKey] = true;
 
             const stopPrice = stopPrices[0];
             let placed = false;
 
-            // Double-check position data to ensure it hasn't changed
-            const currentPositionData = accountManager.getPositionData(token, symbol);
+            // Double-check position data
+            const currentPositionData = accountManager.getPositionData(accountName, symbol);
             if (!currentPositionData?.status || 
                 currentPositionData.triggers[0] !== triggers[0] ||
                 currentPositionData.stop_prices[0] !== stopPrices[0]) {
@@ -57,13 +56,12 @@ export async function checkTriggers(
                 return;
             }
 
-            // Log trigger hit with detailed information
             await logTrading(
                 "TRIGGER_HIT",
                 symbol,
                 `Trigger hit for ${symbol}`,
                 {
-                    token,
+                    account: accountName,
                     trigger_side: positionData.trigger_side,
                     current_price: currentPrice.toFixed(8),
                     trigger_price: triggers[0].toFixed(8),
@@ -85,13 +83,12 @@ export async function checkTriggers(
                     const newTriggers = triggers.slice(1);
                     const newStopPrices = stopPrices.slice(1);
 
-                    // Log stop loss update with detailed information
                     await logTrading(
                         "STOP_LOSS_UPDATED",
                         symbol,
                         `Stop loss updated for ${symbol}`,
                         {
-                            token,
+                            account: accountName,
                             current_price: currentPrice.toFixed(8),
                             new_stop_price: stopPrice.toFixed(8),
                             previous_stop_price: stopPrices[0].toFixed(8),
@@ -102,26 +99,13 @@ export async function checkTriggers(
                         }
                     );
 
-                    // Update position with new triggers and stop prices
-                    accountManager.updatePosition(token, symbol, {
+                    await accountManager.updatePosition(accountName, symbol, {
                         triggers: newTriggers,
                         stop_prices: newStopPrices,
                     });
 
                     processingTriggers[lockKey] = false;
                     return;
-                } else {
-                    await logTrading(
-                        "ERROR",
-                        symbol,
-                        `Failed to place trailing stop loss for ${symbol}`,
-                        {
-                            retry_count: retryCount + 1,
-                            max_retries: 3,
-                            stop_price: stopPrice.toFixed(8),
-                            current_price: currentPrice.toFixed(8)
-                        }
-                    );
                 }
             }
 
@@ -131,6 +115,7 @@ export async function checkTriggers(
                     symbol,
                     `Failed to place trailing stop loss after all retries for ${symbol}`,
                     {
+                        account: accountName,
                         attempts: 3,
                         stop_price: stopPrice.toFixed(8),
                         side: isLong ? "BUY" : "SELL",
@@ -140,19 +125,18 @@ export async function checkTriggers(
 
                 await tradeManager.closePosition(symbol);
             }
-        } catch (e: any) {
+        } catch (error) {
             await logTrading(
                 "ERROR",
                 symbol,
                 `Failed to place stop loss update for ${symbol}`,
                 {
-                    error: e.message,
+                    error: error instanceof Error ? error.message : "Unknown error",
                     current_price: currentPrice.toFixed(8),
                     trigger_price: triggers[0].toFixed(8)
                 }
             );
         } finally {
-            // Always release the lock
             processingTriggers[lockKey] = false;
         }
     }

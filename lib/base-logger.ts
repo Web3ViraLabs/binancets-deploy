@@ -1,13 +1,15 @@
 import { createLogger, format, transports } from 'winston';
 import moment from 'moment';
 import colors from 'colors/safe';
+import fs from 'fs';
 
 // Custom formats
 const detailedFormat = format.printf(
-  ({ timestamp, level, event, message, details, error }) => {
-    let logMessage = `${timestamp} [${level.toUpperCase()}] [${event}]: ${message}`;
+  ({ timestamp, level, event, message, details, account }) => {
+    let logMessage = `${timestamp} [${level.toUpperCase()}] [${event}]`;
+    if (account) logMessage += ` [${account}]`;
+    logMessage += `: ${message}`;
     if (details) logMessage += `\nDetails: ${JSON.stringify(details, null, 2)}`;
-    if (error) logMessage += `\nError: ${JSON.stringify(error, null, 2)}`;
     return logMessage;
   }
 );
@@ -96,6 +98,7 @@ export const tradingLogger = createLogger({
   transports: [
     new transports.File({
       filename: 'trading.log',
+      level: 'info'
     }),
     new transports.Console({
       format: format.combine(
@@ -103,8 +106,9 @@ export const tradingLogger = createLogger({
           format: () => moment().utcOffset('+05:30').format('YYYY-MM-DD HH:mm:ss.SSS'),
         }),
         consoleFormat
-      )
-    }),
+      ),
+      level: 'info'
+    })
   ],
 });
 
@@ -121,3 +125,46 @@ export const closeLoggers = () => {
   debugLogger.close();
   websocketLogger.close();
 };
+
+// Function to create account-specific logger
+export function createAccountLogger(accountName: string) {
+  try {
+    // Create logs directory if it doesn't exist
+    if (!fs.existsSync('logs')) {
+      fs.mkdirSync('logs');
+    }
+    // Create accounts directory if it doesn't exist
+    if (!fs.existsSync('logs/accounts')) {
+      fs.mkdirSync('logs/accounts');
+    }
+  } catch (error) {
+    console.error('Error creating log directories:', error);
+    throw error;
+  }
+
+  return createLogger({
+    level: 'info',
+    format: format.combine(
+      format.timestamp({
+        format: () => moment().utcOffset('+05:30').format('YYYY-MM-DD HH:mm:ss.SSS'),
+      }),
+      detailedFormat
+    ),
+    transports: [
+      new transports.File({
+        filename: `logs/accounts/${accountName}.log`,
+      }),
+      new transports.Console({
+        format: format.combine(
+          format.timestamp({
+            format: () => moment().utcOffset('+05:30').format('YYYY-MM-DD HH:mm:ss.SSS'),
+          }),
+          consoleFormat
+        )
+      }),
+    ],
+  });
+}
+
+// Keep track of account loggers
+export const accountLoggers: Record<string, any> = {};

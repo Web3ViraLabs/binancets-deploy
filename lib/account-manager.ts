@@ -34,6 +34,7 @@ export class AccountManager {
             "Error saving account data",
             { 
               error: err.message,
+              file: this.filePath,
               timestamp: moment().utcOffset('+05:30').format('YYYY-MM-DD HH:mm:ss.SSS')
             }
           );
@@ -51,32 +52,30 @@ export class AccountManager {
     );
   }
 
-  public initializeAccountData(tokens: string[], pairs: Pair[]): void {
+  public initializeAccountData(accountName: string, pairs: Pair[]): void {
     let initialized = false;
 
-    tokens.forEach((token) => {
-      if (!this.accountData[token]) {
-        this.accountData[token] = {
-          positions: {},
+    if (!this.accountData[accountName]) {
+      this.accountData[accountName] = {
+        positions: {},
+      };
+      initialized = true;
+    }
+
+    pairs.forEach((pair) => {
+      if (!this.accountData[accountName].positions[pair.symbol]) {
+        this.accountData[accountName].positions[pair.symbol] = {
+          status: false,
+          entry_price: null,
+          triggers: [],
+          stop_prices: [],
+          trigger_side: null,
+          lock_close_price: null,
+          movement_threshold: null,
+          is_placing_stop_loss_running: false,
         };
         initialized = true;
       }
-
-      pairs.forEach((pair) => {
-        if (!this.accountData[token].positions[pair.symbol]) {
-          this.accountData[token].positions[pair.symbol] = {
-            status: false,
-            entry_price: 0.0,
-            triggers: [],
-            stop_prices: [],
-            trigger_side: null,
-            lock_close_price: null,
-            movement_threshold: null,
-            is_placing_stop_loss_running: false,
-          };
-          initialized = true;
-        }
-      });
     });
 
     if (initialized) {
@@ -85,58 +84,58 @@ export class AccountManager {
   }
 
   public updatePosition(
-    token: string,
+    accountName: string,
     symbol: string,
     updates: Partial<TokenData["positions"][string]>
   ): void {
-    if (!this.accountData[token]) {
-      throw new Error(`Account for token ${token} does not exist.`);
+    if (!this.accountData[accountName]) {
+      throw new Error(`Account for ${accountName} does not exist.`);
     }
 
-    if (!this.accountData[token].positions[symbol]) {
-      throw new Error(`Symbol ${symbol} does not exist for token ${token}.`);
+    if (!this.accountData[accountName].positions[symbol]) {
+      throw new Error(`Symbol ${symbol} does not exist for account ${accountName}.`);
     }
 
-    this.accountData[token].positions[symbol] = {
-      ...this.accountData[token].positions[symbol],
+    this.accountData[accountName].positions[symbol] = {
+      ...this.accountData[accountName].positions[symbol],
       ...updates,
     };
 
     this.saveAccountData();
   }
 
-  public getAccountData(token: string): TokenData | null {
-    return this.accountData[token] || null;
+  public getAccountData(accountName: string): TokenData | null {
+    return this.accountData[accountName] || null;
   }
 
   public getPositionData(
-    token: string,
+    accountName: string,
     symbol: string
   ): TokenData["positions"][string] | null {
-    const account = this.getAccountData(token);
+    const account = this.getAccountData(accountName);
     if (account && account.positions[symbol]) {
       return account.positions[symbol];
     }
     return null;
   }
 
-  public deleteAccount(token: string): void {
-    if (this.accountData[token]) {
-      delete this.accountData[token];
+  public deleteAccount(accountName: string): void {
+    if (this.accountData[accountName]) {
+      delete this.accountData[accountName];
       this.saveAccountData();
     } else {
-      throw new Error(`Account for token ${token} does not exist.`);
+      throw new Error(`Account for ${accountName} does not exist.`);
     }
   }
 
-  public deletePosition(token: string, symbol: string): void {
-    const account = this.getAccountData(token);
+  public deletePosition(accountName: string, symbol: string): void {
+    const account = this.getAccountData(accountName);
     if (account && account.positions[symbol]) {
       delete account.positions[symbol];
       this.saveAccountData();
     } else {
       throw new Error(
-        `Position for symbol ${symbol} does not exist in token ${token}.`
+        `Position for symbol ${symbol} does not exist in account ${accountName}.`
       );
     }
   }

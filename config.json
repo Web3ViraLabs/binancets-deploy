@@ -1,57 +1,193 @@
 {
-  "order_url": "http://localhost:5000",
   "websocket_interval": "1m",
   "api_interval": "1m",
-  "tokens": ["hussydaddy"],
+  "accounts": [
+    {
+      "name": "iamhussy",
+      "api_key": "bUU4zXNDXXy6LeGSBV56dQe3PcU05dkRjzceQ4BS7zbLRhIgZT6tBplzdKg0BGBr",
+      "api_secret": "FgxkdwVWYRU9WMgwL6xAfX10xkKsh81ANWbB9CMSRkpbkaOq0qCcATQCJbiuPnNb"
+    },
+    {
+      "name": "yunus",
+      "api_key": "JyjXuBRKsknsGRb8UunVdQZM1kblEXZKlDWVccZs3cVAq0z49voHC1mfRdx1Gabn",
+      "api_secret": "j0NcfaImS4891TRWDHEuwThhua1Kttcz900I5ZK5kRhU217Po9JnaFvm0cSpSzMx"
+    }
+  ],
   "pairs": [
     {
-      "symbol": "XRPUSDT",
+      "symbol": "TROYUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 30
+      "usdt_amount": 30
     },
     {
-      "symbol": "ZRXUSDT",
+      "symbol": "ORDIUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 40
+      "usdt_amount": 30
     },
     {
-      "symbol": "ETHUSDT",
+      "symbol": "ADAUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 0.016
+      "usdt_amount": 30
     },
     {
-      "symbol": "BNBUSDT",
+      "symbol": "DOTUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 0.08
+      "usdt_amount": 30
     },
     {
-      "symbol": "LTCUSDT",
+      "symbol": "POPCATUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 0.6
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "WLDUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
     },
     {
       "symbol": "NEARUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 6
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "APTUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "TAOUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "TONUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "ENAUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "NEIROUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
     },
     {
       "symbol": "BCHUSDT",
       "threshold": 10,
-      "fees_exemption_percentage": 0,
+      "fees_exemption_percentage": 0.2,
       "num_previous_candles": 10,
-      "qty": 0.08
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "TIAUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "WIFUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "1000PEPEUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "SUIUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "SOLUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "XRPUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "LTCUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "BNBUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "ZRXUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
+    },
+    {
+      "symbol": "ETHUSDT",
+      "threshold": 10,
+      "fees_exemption_percentage": 0.2,
+      "num_previous_candles": 10,
+      "usdt_amount": 30
     }
   ]
 }

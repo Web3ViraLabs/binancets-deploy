@@ -3,14 +3,19 @@ export interface Pair {
   threshold: number;
   fees_exemption_percentage: number;
   num_previous_candles: number;
-  qty: number;
+  usdt_amount: number;
+}
+
+export interface AccountConfig {
+  name: string;
+  api_key: string;
+  api_secret: string;
 }
 
 export interface Config {
-  order_url: string;
   websocket_interval: string;
   api_interval: string;
-  tokens: string[];
+  accounts: AccountConfig[];
   pairs: Pair[];
 }
 
@@ -73,4 +78,10 @@ export interface OrderResult {
   positionDetails?: Record<string, any>;
   stopLossDetails?: Record<string, any>;
   error?: string;
+}
+
+// Add WebSocket related types
+export interface WebSocketError {
+    code: number;
+    message: string;
 }

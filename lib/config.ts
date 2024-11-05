@@ -13,6 +13,12 @@ export const config: Config = {
     order_url: process.env.ORDER_URL || configFile.order_url,
 };
 
-// Export sensitive configurations from .env
-export const BINANCE_API_KEY = process.env.BINANCE_API_KEY;
-export const BINANCE_SECRET_KEY = process.env.BINANCE_SECRET_KEY;
+// Add validation for API credentials
+if (!config.accounts.every(acc => acc.api_key && acc.api_secret)) {
+    throw new Error('Missing API credentials in config');
+}
+
+// Add validation for USDT amounts
+if (!config.pairs.every(pair => pair.usdt_amount > 0)) {
+    throw new Error('Invalid USDT amount in config');
+}

@@ -13,6 +13,7 @@ function getISTTime(timestamp: number): string {
 
 // Function to process the candle and check if it meets criteria
 export async function processCandles(
+  accountName: string,
   symbol: string,
   currentCandle: Candle,
   accountManager: AccountManager
@@ -99,6 +100,7 @@ export async function processCandles(
       symbol,
       "✨ Trading criteria met",
       {
+        account: accountName,
         current_diff: currentDiff.toFixed(4) + "%",
         threshold: dynamicThreshold.toFixed(4) + "%",
         past_diffs_sum: pastDiffsSum.toFixed(4) + "%",
@@ -117,28 +119,24 @@ export async function processCandles(
       }
     );
 
-    // Lock the close price and adjust thresholds for all tokens
-    const tokens = config.tokens;
-    for (const token of tokens) {
-      accountManager.updatePosition(token, symbol, {
-        lock_close_price: currentCandle.close,
-        movement_threshold: dynamicThreshold / 2,
-      });
+    // Lock the close price and adjust thresholds for the specific account
+    accountManager.updatePosition(accountName, symbol, {
+      lock_close_price: currentCandle.close,
+      movement_threshold: dynamicThreshold / 2,
+    });
 
-      await logTrading(
-        "PRICE_THRESHOLD_LOCKED",
-        symbol,
-        "🔒 Price thresholds have been set",
-        {
-          token,
-          lock_price: currentCandle.close.toFixed(8),
-          movement_threshold: (dynamicThreshold / 2).toFixed(4) + "%",
-          up_threshold: (currentCandle.close * (1 + dynamicThreshold / 200)).toFixed(8),
-          down_threshold: (currentCandle.close * (1 - dynamicThreshold / 200)).toFixed(8),
-          timestamp: moment().utcOffset('+05:30').format('YYYY-MM-DD HH:mm:ss.SSS')
-        }
-      );
-    }
+    await logTrading(
+      "PRICE_THRESHOLD_LOCKED",
+      symbol,
+      "🔒 Price thresholds have been set",
+      {
+        account: accountName,
+        lock_price: currentCandle.close.toFixed(8),
+        movement_threshold: (dynamicThreshold / 2).toFixed(4) + "%",
+        up_threshold: (currentCandle.close * (1 + dynamicThreshold / 200)).toFixed(8),
+        down_threshold: (currentCandle.close * (1 - dynamicThreshold / 200)).toFixed(8)
+      }
+    );
 
     return true;
   }

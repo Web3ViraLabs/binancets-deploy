@@ -22,8 +22,8 @@ logDebug(
   "SYSTEM",
   "Configuration loaded",
   {
+    accounts: config.accounts.map(acc => acc.name),
     pairs_count: config.pairs.length,
-    tokens: config.tokens,
     timestamp: moment().utcOffset('+05:30').format('YYYY-MM-DD HH:mm:ss.SSS')
   }
 );

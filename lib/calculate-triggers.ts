@@ -7,7 +7,7 @@ export async function calculateTriggers(
   accountManager: AccountManager,
   entryPrice: number,
   direction: "long" | "short",
-  token: string,
+  accountName: string,
   symbol: string,
   count: number = 20
 ): Promise<{ triggers: number[]; stopPrices: number[] }> {
@@ -15,16 +15,16 @@ export async function calculateTriggers(
   const stopPrices: number[] = [];
 
   // Retrieve the movement threshold and fee exemption percentage
-  const positionData = accountManager.getPositionData(token, symbol);
+  const positionData = accountManager.getPositionData(accountName, symbol);
   if (!positionData || !positionData.movement_threshold) {
     tradingLogger.info({
       event: "ERROR",
       symbol,
-      message: `No position data found for token ${token} and symbol ${symbol}`,
-      details: { token, symbol }
+      message: `No position data found for token ${accountName} and symbol ${symbol}`,
+      details: { token: accountName, symbol }
     });
     throw new Error(
-      `No position data found for token ${token} and symbol ${symbol}`
+      `No position data found for token ${accountName} and symbol ${symbol}`
     );
   }
 
@@ -80,7 +80,7 @@ export async function calculateTriggers(
   }
 
   // Store the calculated triggers and stop prices
-  accountManager.updatePosition(token, symbol, {
+  accountManager.updatePosition(accountName, symbol, {
     triggers,
     stop_prices: stopPrices,
     trigger_side: direction,
