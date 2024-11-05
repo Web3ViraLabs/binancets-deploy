@@ -219,20 +219,22 @@ export class TradeManager {
         return { success: false, error: 'Position already exists' };
       }
 
+      // In placePositionWithStopLoss method:
       const orderParams: NewFuturesOrderParams<string> = {
         symbol: symbol.toUpperCase(),
         side,
         type: 'MARKET',
-        quantity: roundedQty.toString(),
+        quantity: roundedQty.toString(), // Convert to string
         positionSide: side === 'BUY' ? 'LONG' : 'SHORT',
       };
 
       const stopLossParams: NewFuturesOrderParams<string> = {
+        // Must use <string>
         symbol: symbol.toUpperCase(),
         side: side === 'BUY' ? 'SELL' : 'BUY',
-        positionSide: side === 'BUY' ? 'LONG' : 'SHORT',
         type: 'STOP_MARKET',
-        stopPrice: roundedStopPrice.toString(),
+        stopPrice: roundedStopPrice.toString(), // Convert to string
+        positionSide: side === 'BUY' ? 'LONG' : 'SHORT',
         workingType: 'MARK_PRICE',
         closePosition: 'true',
       };
@@ -311,17 +313,19 @@ export class TradeManager {
 
       await this.cancelAllOrder(symbol);
 
-      const stopLossParams: NewFuturesOrderParams<string> = {
+      const stopLossParams: NewFuturesOrderParams = {
+        // no <string> here
         symbol: symbol.toUpperCase(),
         side: forSide === 'BUY' ? 'SELL' : 'BUY',
         type: 'STOP_MARKET',
-        stopPrice: roundedStopPrice.toString(),
+        stopPrice: roundedStopPrice, // Convert to string
         positionSide: forSide === 'BUY' ? 'LONG' : 'SHORT',
         workingType: 'MARK_PRICE',
         closePosition: 'true',
       };
 
       const stopLossOrder = await this.client.submitNewOrder(stopLossParams);
+
       await logAccount(
         this.accountName,
         'STOP_LOSS_UPDATED',
@@ -370,11 +374,11 @@ export class TradeManager {
             quantityPrecision
           );
 
-          const closePayload: NewFuturesOrderParams<string> = {
+          const closePayload: NewFuturesOrderParams = {
             symbol,
             side: parseFloat(pos.positionAmt.toString()) > 0 ? 'SELL' : 'BUY',
             type: 'MARKET',
-            quantity: roundedQty.toString(),
+            quantity: roundedQty,
             positionSide: pos.positionSide,
           };
 
