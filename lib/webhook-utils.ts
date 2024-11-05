@@ -1,7 +1,7 @@
-import { sendDiscordWebhook } from './send-webhook';
-import { Candle } from './interfaces';
+import {sendDiscordWebhook} from './send-webhook';
+import {Candle} from './interfaces';
 import moment from 'moment';
-import { logTrading } from './logger';
+import {logTrading} from './logger';
 
 export const sendTradeWebhook = {
     significantMovement: async (symbol: string, data: {
@@ -12,11 +12,11 @@ export const sendTradeWebhook = {
         averageDiff: number
     }) => {
         try {
-            await logTrading(
+            logTrading(
                 "WEBHOOK_ATTEMPT",
                 symbol,
                 "Attempting to send significant movement webhook",
-                { data }
+                {data}
             );
 
             await sendDiscordWebhook(
@@ -43,11 +43,11 @@ export const sendTradeWebhook = {
                 true
             );
         } catch (error) {
-            await logTrading(
+            logTrading(
                 "ERROR",
                 symbol,
                 "Failed to send significant movement webhook",
-                { error: error instanceof Error ? error.message : "Unknown error" }
+                {error: error instanceof Error ? error.message : "Unknown error"}
             );
         }
     },
@@ -59,11 +59,11 @@ export const sendTradeWebhook = {
         downThreshold: number
     }) => {
         try {
-            await logTrading(
+            logTrading(
                 "WEBHOOK_ATTEMPT",
                 symbol,
                 "Attempting to send price threshold webhook",
-                { data }
+                {data}
             );
 
             await sendDiscordWebhook(
@@ -85,11 +85,11 @@ export const sendTradeWebhook = {
                 true
             );
         } catch (error) {
-            await logTrading(
+            logTrading(
                 "ERROR",
                 symbol,
                 "Failed to send price threshold webhook",
-                { error: error instanceof Error ? error.message : "Unknown error" }
+                {error: error instanceof Error ? error.message : "Unknown error"}
             );
         }
     }

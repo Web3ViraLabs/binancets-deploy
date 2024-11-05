@@ -25,7 +25,7 @@ export async function checkTriggers(
 
     // Create a unique key for this token-symbol pair
     const lockKey = `${token}-${symbol}`;
-    
+
     // Check if we're already processing a trigger for this pair
     if (processingTriggers[lockKey]) {
         return;
@@ -50,7 +50,7 @@ export async function checkTriggers(
 
             // Double-check position data to ensure it hasn't changed
             const currentPositionData = accountManager.getPositionData(token, symbol);
-            if (!currentPositionData?.status || 
+            if (!currentPositionData?.status ||
                 currentPositionData.triggers[0] !== triggers[0] ||
                 currentPositionData.stop_prices[0] !== stopPrices[0]) {
                 processingTriggers[lockKey] = false;
@@ -58,7 +58,7 @@ export async function checkTriggers(
             }
 
             // Log trigger hit with detailed information
-            await logTrading(
+            logTrading(
                 "TRIGGER_HIT",
                 symbol,
                 `Trigger hit for ${symbol}`,
@@ -86,7 +86,7 @@ export async function checkTriggers(
                     const newStopPrices = stopPrices.slice(1);
 
                     // Log stop loss update with detailed information
-                    await logTrading(
+                    logTrading(
                         "STOP_LOSS_UPDATED",
                         symbol,
                         `Stop loss updated for ${symbol}`,
@@ -111,7 +111,7 @@ export async function checkTriggers(
                     processingTriggers[lockKey] = false;
                     return;
                 } else {
-                    await logTrading(
+                    logTrading(
                         "ERROR",
                         symbol,
                         `Failed to place trailing stop loss for ${symbol}`,
@@ -126,7 +126,7 @@ export async function checkTriggers(
             }
 
             if (!placed) {
-                await logTrading(
+                logTrading(
                     "ERROR",
                     symbol,
                     `Failed to place trailing stop loss after all retries for ${symbol}`,
@@ -141,7 +141,7 @@ export async function checkTriggers(
                 await tradeManager.closePosition(symbol);
             }
         } catch (e: any) {
-            await logTrading(
+            logTrading(
                 "ERROR",
                 symbol,
                 `Failed to place stop loss update for ${symbol}`,

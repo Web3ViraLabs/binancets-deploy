@@ -16,7 +16,7 @@ export const logCandle = (symbol: string, message: string, data: any) => {
     });
 };
 
-export const logTrading = async (event: string, symbol: string, message: string, details: any) => {
+export const logTrading = (event: string, symbol: string, message: string, details: any) => {
     // Log to trading.log and debug.log
     tradingLogger.info({ event, symbol, message, details });
     debugLogger.debug({ 
